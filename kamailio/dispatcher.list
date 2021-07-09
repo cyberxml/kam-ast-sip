@@ -1,0 +1,7 @@
+# ng-voice Interconnect
+1 sip:172.22.1.31 0 0
+1 sip:172.22.7.31 0 0
+1 sip:k1-ast1 0 0
+1 sip:k1-ast2 0 0
+1 sip:k1-ast1.test_net_1 0 0
+1 sip:k1-ast2.test_net_2 0 0

@@ -1,0 +1,71 @@
+services:
+   mysql:
+     build: ./mysql
+     container_name: k1-mysql
+     env_file:
+       - .env
+     #volumes:
+     #- dbdata:/var/lib/mysql
+     #  - /etc/timezone:/etc/timezone:ro
+     #  - /etc/localtime:/etc/localtime:ro
+     expose:
+         - "3306/tcp"
+     networks:
+       test_net_1:
+         ipv4_address: ${MYSQL_IP}
+   asterisk1:
+     container_name: k1-ast1
+     image: andrius/asterisk
+     env_file:
+       - .env
+     networks:
+       test_net_1:
+         ipv4_address: ${ASTERISK1_IP}
+   asterisk2:
+     container_name: k1-ast2
+     image: andrius/asterisk
+     env_file:
+       - .env
+     networks:
+       test_net_7:
+         ipv4_address: ${ASTERISK2_IP}
+   sipp1:
+     container_name: k1-sipp1
+     build: ./sipp
+     env_file:
+       - .env
+     networks:
+       test_net_1:
+         ipv4_address: ${SIPP1_IP}
+   sipp2:
+     container_name: k1-sipp2
+     build: ./sipp
+     env_file:
+       - .env
+     networks:
+       test_net_7:
+         ipv4_address: ${SIPP2_IP}
+   kamailio:
+     container_name: k1-kam
+     depends_on:
+       - asterisk1
+       - mysql
+     build: ./kamailio
+     expose:
+       - "5060/udp"
+     restart: always
+     env_file:
+       - .env
+     networks:
+       test_net_1:
+         ipv4_address: ${KAMAILIO1_IP}
+       test_net_7:
+         ipv4_address: ${KAMAILIO2_IP}
+networks:
+  test_net_1:
+    external: true
+  test_net_7:
+    external: true
+volumes:
+  dbdata: {}
+

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="iso-8859-2" ?>
+<!DOCTYPE scenario SYSTEM "sipp.dtd">
+
+<scenario name="Emulate card transaction over phone">
+
+
+  <send retrans="500">
+    <![CDATA[
+      
+      INVITE sip:[field3]@[remote_ip]:[remote_port] SIP/2.0      
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      Max-Forwards: 70
+      From: <sip:[field0]@[remote_ip]>;tag=[call_number]
+      To: <sip:[field3]@[remote_ip]:[remote_port]>
+      Contact: sip:[field0]@[local_ip]:[local_port]
+      Call-ID: [call_id]
+      CSeq: [cseq] INVITE
+      User-Agent: SIPp/Linux
+      Min-SE: 90
+      Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH, MESSAGE
+      Supported: replaces, timer
+      Content-Type: application/sdp
+      Content-Length: [len]
+
+      v=0
+      o=root 1879914794 1879914794 IN IP[local_ip_type] [local_ip]
+      s=IP PBX 11.15.0
+      c=IN IP[local_ip_type] [local_ip]
+      t=0 0
+      m=audio 18080 RTP/AVP 8 9 18 0 101
+      a=rtpmap:8 PCMA/8000
+      a=rtpmap:9 G722/8000
+      a=rtpmap:18 G729/8000
+      a=fmtp:18 annexb=no
+      a=rtpmap:0 PCMU/8000
+      a=rtpmap:101 telephone-event/8000
+      a=fmtp:101 0-16
+      a=ptime:20
+      a=sendrecv
+
+    ]]>
+  </send>
+
+  <recv response="100" optional="true">
+  </recv>
+
+  <recv response="180" optional="true">
+  </recv>
+
+  <recv response="183" optional="true">
+  </recv>
+
+  <recv response="200" rtd="true" crlf="true" rrs="true">
+  </recv>
+
+  <send>
+    <![CDATA[
+
+      ACK [next_url] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      Route: <sip:172.22.1.30;r2=on;lr=on;nat=yes>,<sip:172.22.3.30;r2=on;lr=on;nat=yes>
+      From: "[field0]" <sip:[field0]@[local_ip]:[local_port]>;tag=[call_number]
+      [last_To:]
+      Call-ID: [call_id]
+      CSeq: [cseq]  ACK
+      Contact: sip:[field0]@[local_ip]:[local_port]
+      Max-Forwards: 70
+      Subject: Performance Test
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <!-- Start of simulate a typical call -->
+  <!-- Total RTP Length: 59000ms (16sec Audio + 16sec DTMF + 8sec Audio + 3sec DTMF + 16sec Audio) -->
+  <!-- Note: let's just use the PCAP files included in SIPp source code -->
+  <nop hide="true">
+    <action>
+       <assign assign_to="counter" value="0"/>
+    </action>
+  </nop>
+  <label id="start_of_loop" />
+
+  <!-- emulate agent's greeting about 16secs -->
+  <nop display="8000ms Audio">
+    <action>
+      <exec play_pcap_audio="../pcap/g711a.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="8000"/>
+
+  <nop display="8000ms Audio">
+    <action>
+      <exec play_pcap_audio="../pcap/g711a.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="8000"/>
+
+  <!-- caller type in the card number 4072209014239745 (not real visa card number) -->
+  <nop display="DTMF 4">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_4.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 0">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_0.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 7">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_7.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 2">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_2.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 2">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_2.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 0">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_0.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 9">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_9.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 0">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_0.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 1">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_1.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 4">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_4.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 2">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_2.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 3">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_3.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 9">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_9.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 7">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_7.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 4">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_4.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 5">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_5.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <!-- agent asks caller to type in the card PIN -->
+  <nop display="8000ms Audio">
+    <action>
+      <exec play_pcap_audio="../pcap/g711a.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="8000"/>
+
+  <!-- caller type in the PIN = 123 -->
+  <nop display="DTMF 1">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_1.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 2">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_2.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+
+  <nop display="DTMF 3">
+    <action>
+      <exec play_pcap_audio="../pcap/dtmf_2833_3.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="1000"/>
+  
+  <!-- emulate agent confirms the transaction about 16secs wrap-up -->
+  <nop display="8000ms Audio">
+    <action>
+      <exec play_pcap_audio="../pcap/g711a.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="8000"/>
+
+  <nop display="8000ms Audio">
+    <action>
+      <exec play_pcap_audio="../pcap/g711a.pcap"/>
+    </action>
+  </nop>
+  <pause milliseconds="8000"/>
+  
+
+  <nop hide="true">
+    <action>
+      <add assign_to="counter" value="1"/>
+      <!-- You can increase the value="1" to emulate longer transactions -->
+      <test assign_to="flag_limit" variable="counter" compare="greater_than_equal" value="1"/>
+    </action>
+  </nop>
+  <nop hide="true" next="finished" test="flag_limit"/>
+  <nop hide="true" next="start_of_loop"/>
+  <label id="finished" />
+  <!-- End of simulate a typical call -->
+
+  <send retrans="500">
+    <![CDATA[
+      BYE [next_url] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      Route: <sip:172.22.1.30;r2=on;lr=on;nat=yes>,<sip:172.22.3.30;r2=on;lr=on;nat=yes>
+      [last_From:]   
+      [last_To:]
+      Call-ID: [call_id]
+      CSeq: [cseq] BYE
+      [last_Contact:]
+      Max-Forwards: 10
+      Subject: Performance Test
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <!-- The 'crlf' option inserts a blank line in the statistics report. -->
+  <recv response="200" crlf="true">
+  </recv>
+
+</scenario>

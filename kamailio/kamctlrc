@@ -1,0 +1,12 @@
+# kamctlrc
+#SIP_DOMAIN=kamailio.org
+DBENGINE=MYSQL
+DBHOST=172.22.1.33
+DBNAME=kamailio
+DBRWUSER="kamailio"
+DBRWPW="kamailiorw"
+DBROUSER="kamailioro"
+DBROPW="kamailioro"
+DBACCESSHOST=k1-kam.test_net_1
+DBROOTPW="ims"
+DBROOTUSER="root"
